@@ -1,0 +1,45 @@
+apiVersion: flink.apache.org/v1beta1
+kind: FlinkDeployment
+metadata:
+  name: flink-hello-example
+spec:
+  image: jacob119/flink-hello:0.0.11
+  flinkVersion: v1_17
+  flinkConfiguration:
+    scheduler-mode: REACTIVE
+    taskmanager.numberOfTaskSlots: "2"
+    state.savepoints.dir: file:///Users/jacob119/dev/workspace/flink-workspace/flink-data/savepoints
+    state.checkpoints.dir: file:///Users/jacob119/dev/workspace/flink-workspace/flink-data/checkpoints
+# high-availability: org.apache.flink.kubernetes.highavailability.KubernetesHaServicesFactory
+#    high-availability.storageDir: file:///Users/jacob119/dev/workspace/flink-workspace/flink-data/ha
+  serviceAccount: flink
+  jobManager:
+    resource:
+      memory: "2048m"
+      cpu: 1
+  taskManager:
+    resource:
+      memory: "2048m"
+      cpu: 1
+  podTemplate:
+    spec:
+      containers:
+        - name: flink-main-container
+          volumeMounts:
+          - mountPath: /opt/flink/log
+            name: flink-logs
+          - mountPath: /opt/flink/downloads
+            name: downloads
+      volumes:
+        - name: flink-logs
+          emptyDir: { }
+        - name: downloads
+          emptyDir: { }
+  job:
+    jarURI: local:///opt/flink/lib/flink-hello-1.1-SNAPSHOT.jar
+    parallelism: 2
+    entryClass: com.jacob.FlinkKafkaS3
+    upgradeMode: savepoint
+    state: running
+    savepointTriggerNonce: 0
+  mode: standalone

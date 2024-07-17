@@ -48,7 +48,7 @@ public class DataStreamJob {
 
 		JobExecutionResult jobResult = env.execute();
 
-		Map<String, Object> accumMap = jobResult.getAllAccumulatorResults();
-		System.out.println(accumMap);
+//		Map<String, Object> accumMap = jobResult.getAllAccumulatorResults();
+//		System.out.println(accumMap);
 	}
 }
